@@ -24,7 +24,7 @@
       { "teamName": "FORE LEFT AND RIGHT", "rnd1": 60.53, "rnd2": 60.90, "total": 121.43, "isDefault": true },
       { "teamName": "LAST MINUTE LARRYS", "rnd1": 60.53, "rnd2": 60.90, "total": 121.43, "isDefault": true },
       { "teamName": "MIGHTY HOPELESS", "rnd1": 60.53, "rnd2": 60.90, "total": 121.43, "isDefault": true },
-      { "teamName":D "MUTINOUS CREW", "rnd1": 60.53, "rnd2": 60.90, "total": 121.43, "isDefault": true },
+      { "teamName": "MUTINOUS CREW", "rnd1": 60.53, "rnd2": 60.90, "total": 121.43, "isDefault": true },
       { "teamName": "SMOKIN EAGLES", "rnd1": 60.53, "rnd2": 60.90, "total": 121.43, "isDefault": true },
       { "teamName": "SPOT ON PL", "rnd1": 60.53, "rnd2": 60.90, "total": 121.43, "isDefault": true },
       { "teamName": "SURFIN THE FAIRWAYS", "rnd1": 60.53, "rnd2": 60.90, "total": 121.43, "isDefault": true },
@@ -42,4 +42,5 @@
       { "teamName": "FUDDY DUDDIES", "rnd1": 80.50, "rnd2": 78.50, "total": 159.00 },
       { "teamName": "BALLZ DEEP IN THE ROUGH", "rnd1": 0, "rnd2": 0, "total": 0 }
     ]
+
   }
