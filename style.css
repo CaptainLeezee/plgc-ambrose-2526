@@ -111,3 +111,38 @@ tfoot tr {
     margin-bottom: 20px;
     font-size: 1.25em;
 }
+
+/* --- Add these styles for the new chart's toggles --- */
+
+/* This creates a responsive grid for the checkboxes */
+#team-toggle-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    max-height: 250px; /* Makes the box scrollable */
+    overflow-y: auto;
+    background-color: #fcfcfc;
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+/* Styles for each checkbox item */
+#team-toggle-container div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#team-toggle-container label {
+    font-size: 0.9em;
+    color: #333;
+    cursor: pointer;
+}
+
+#team-toggle-container input[type="checkbox"] {
+    cursor: pointer;
+}
+
+
