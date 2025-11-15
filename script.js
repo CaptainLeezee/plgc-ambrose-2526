@@ -1,3 +1,7 @@
+// --- NEW: Declare a global variable for our weekly chart ---
+// This allows the checkbox event listeners to access and update the chart.
+let myWeeklyChart;
+
 // Wait for the HTML page to be fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Select the elements where we will inject data
@@ -13,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             titleElement.textContent = data.title;
             const sortedTeams = data.teams.sort((a, b) => a.total - b.total);
 
-            // Build the table
+            // --- 1. Build the Table ---
             sortedTeams.forEach(team => {
                 if (team.total === 0) return;
                 const row = document.createElement('tr');
@@ -56,9 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             tableFooter.appendChild(averageRow);
 
-            // --- NEW: Call the function to create the chart ---
-            // We pass 'sortedTeams' so the chart legend can match the table order
+            // --- 2. Create the Cumulative Chart (Chart 1) ---
             createScoreChart(sortedTeams); 
+
+            // --- 3. Create the Weekly Score Chart (Chart 2) ---
+            createWeeklyScoreChart(sortedTeams, data.weeklyAverage);
 
         })
         .catch(error => {
@@ -68,77 +74,166 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * --- NEW FUNCTION ---
+ * Chart 1: Cumulative Scores (Existing Function)
  * Creates a line chart of cumulative scores over time.
- * @param {Array} teamsData - The array of team data from scores.json.
  */
 function createScoreChart(teamsData) {
     const ctx = document.getElementById('scoreChart').getContext('2d');
 
-    // 1. Prepare the data for the chart
     const datasets = teamsData
-        .filter(team => team.total > 0) // Exclude teams with 0 score
+        .filter(team => team.total > 0)
         .map(team => {
-            // Calculate cumulative scores
             const r1_total = team.rnd1.score;
             const r2_total = r1_total + team.rnd2.score;
             const r3_total = r2_total + team.rnd3.score;
-            const r4_total = r3_total + team.rnd4.score; // This is the final total
-
-            // Generate a random color for this team's line
+            const r4_total = r3_total + team.rnd4.score;
             const color = `rgba(${Math.floor(Math.random() * 200)}, ${Math.floor(Math.random() * 200)}, ${Math.floor(Math.random() * 200)}, 0.8)`;
 
             return {
                 label: team.teamName,
-                // Start at 0, then add each round's cumulative total
                 data: [0, r1_total, r2_total, r3_total, r4_total], 
                 borderColor: color,
-                backgroundColor: color, // For the legend dot
+                backgroundColor: color,
                 fill: false,
-                tension: 0.1 // Makes the lines slightly curved
+                tension: 0.1 
             };
         });
 
-    // 2. Create the chart instance
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Start', 'Rnd 1', 'Rnd 2', 'Rnd 3', 'Rnd 4'], // X-axis labels
+            labels: ['Start', 'Rnd 1', 'Rnd 2', 'Rnd 3', 'Rnd 4'],
             datasets: datasets
         },
         options: {
             responsive: true,
             plugins: {
                 legend: {
+                    display: teamsData.length <= 30, // Hide legend if too many teams
                     position: 'top',
-                    // Hides some legend items if there are too many
-                    // (optional, but good for usability)
-                    display: teamsData.length <= 30, 
-                    labels: {
-                        boxWidth: 12,
-                        font: {
-                            size: 10
-                        }
-                    }
+                    labels: { boxWidth: 12, font: { size: 10 } }
+                },
+                tooltip: { mode: 'index', intersect: false }
+            },
+            scales: {
+                y: { title: { display: true, text: 'Cumulative Score (Lowest is Best)' } },
+                x: { title: { display: true, text: 'Rounds Completed' } }
+            }
+        }
+    });
+}
+
+
+/**
+ * --- NEW FUNCTION FOR CHART 2 ---
+ * Creates a line chart of weekly scores with toggleable checkboxes.
+ */
+function createWeeklyScoreChart(teamsData, weeklyAverage) {
+    const ctx = document.getElementById('weeklyScoreChart').getContext('2d');
+    const toggleContainer = document.getElementById('team-toggle-container');
+    
+    // Clear any existing checkboxes
+    toggleContainer.innerHTML = '';
+
+    const allDatasets = [];
+
+    // --- 1. Create a dataset for each team ---
+    teamsData
+        .filter(team => team.total > 0)
+        .forEach(team => {
+            const color = `rgba(${Math.floor(Math.random() * 200)}, ${Math.floor(Math.random() * 200)}, ${Math.floor(Math.random() * 200)}, 0.8)`;
+            
+            // This is the per-round data, NOT cumulative
+            const teamDataset = {
+                label: team.teamName,
+                data: [
+                    team.rnd1.score,
+                    team.rnd2.score,
+                    team.rnd3.score,
+                    team.rnd4.score
+                ],
+                borderColor: color,
+                backgroundColor: color,
+                fill: false,
+                tension: 0.1,
+                hidden: false // Initially visible
+            };
+            allDatasets.push(teamDataset);
+
+            // --- 2. Create a checkbox for this team ---
+            const toggleDiv = document.createElement('div');
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = true;
+            checkbox.id = team.teamName; // Link checkbox to dataset label
+            
+            const label = document.createElement('label');
+            label.htmlFor = team.teamName;
+            label.textContent = team.teamName;
+            
+            toggleDiv.appendChild(checkbox);
+            toggleDiv.appendChild(label);
+            toggleContainer.appendChild(toggleDiv);
+
+            // --- 3. Add event listener to the checkbox ---
+            checkbox.addEventListener('change', () => {
+                // Find the dataset in the chart
+                const dataset = myWeeklyChart.data.datasets.find(d => d.label === team.teamName);
+                if (dataset) {
+                    dataset.hidden = !checkbox.checked; // Hide or show it
+                    myWeeklyChart.update(); // Redraw the chart
+                }
+            });
+        });
+
+    // --- 4. Add the "Weekly Average" dataset ---
+    allDatasets.push({
+        label: 'Weekly Average',
+        data: [
+            weeklyAverage.rnd1,
+            weeklyAverage.rnd2,
+            weeklyAverage.rnd3,
+            weeklyAverage.rnd4
+        ],
+        borderColor: '#e63946', // A strong red color
+        backgroundColor: '#e63946',
+        fill: false,
+        borderDash: [5, 5], // Make it a dashed line
+        tension: 0.1
+    });
+
+    // --- 5. Create the chart instance ---
+    // We assign it to the global variable
+    myWeeklyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Rnd 1', 'Rnd 2', 'Rnd 3', 'Rnd 4'], // X-axis labels
+            datasets: allDatasets
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                // IMPORTANT: Hide the default legend
+                legend: {
+                    display: false 
                 },
                 tooltip: {
-                    // Shows all teams on hover
                     mode: 'index',
                     intersect: false,
                 }
             },
             scales: {
                 y: {
-                    beginAtZero: true,
                     title: {
                         display: true,
-                        text: 'Cumulative Score (Lowest is Best)'
+                        text: 'Score per Round (Lowest is Best)'
                     }
                 },
                 x: {
                     title: {
                         display: true,
-                        text: 'Rounds Completed'
+                        text: 'Round'
                     }
                 }
             }
