@@ -140,7 +140,7 @@ function createWeeklyScoreChart(teamsData, weeklyAverage) {
     // --- 1. Create a dataset for each team ---
     teamsData
         .filter(team => team.total > 0)
-        .forEach(team, index => {
+        .forEach((team, index) => {
             const color = `rgba(${Math.floor(Math.random() * 200)}, ${Math.floor(Math.random() * 200)}, ${Math.floor(Math.random() * 200)}, 0.8)`;
             
             // This is the per-round data, NOT cumulative
@@ -240,4 +240,5 @@ function createWeeklyScoreChart(teamsData, weeklyAverage) {
         }
     });
 }
+
 
