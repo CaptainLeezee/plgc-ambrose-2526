@@ -4,6 +4,9 @@
     <meta charset="UTF-R" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ambrose Scores</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
     <link rel="stylesheet" href="style.css" />
     <script src="script.js" defer></script>
 </head>
@@ -23,14 +26,20 @@
                     </tr>
                 </thead>
                 <tbody id="score-body">
-                    </tbody>
+                </tbody>
                 <tfoot id="score-footer">
-                    </tfoot>
+                </tfoot>
             </table>
         </div>
         <div class="note">
             * Grayed-out scores indicate a default score was registered.
         </div>
+
+        <div class="chart-container">
+            <h2>Team Totals Over Time</h2>
+            <canvas id="scoreChart"></canvas>
+        </div>
+        
     </main>
 </body>
 </html>
