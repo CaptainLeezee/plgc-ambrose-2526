@@ -22,21 +22,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (team.total === 0) return;
 
                 const row = document.createElement('tr');
+
+                // Get scores and default flags, and format them
+                let r1_score = team.rnd1.score.toFixed(2);
+                let r1_class = team.rnd1.isDefault ? 'class="default-score"' : '';
+
+                let r2_score = team.rnd2.score.toFixed(2);
+                let r2_class = team.rnd2.isDefault ? 'class="default-score"' : '';
                 
-                // Add a class if it's a default score
-                if (team.isDefault) {
-                    row.classList.add('default-score');
-                }
-
-                // Format numbers to 2 decimal places
-                let r1 = team.rnd1.toFixed(2);
-                let r2 = team.rnd2.toFixed(2);
                 let total = team.total.toFixed(2);
-
+                
+                // Build the row HTML, applying classes only to the cells
                 row.innerHTML = `
                     <td>${team.teamName}</td>
-                    <td>${r1}</td>
-                    <td>${r2}</td>
+                    <td ${r1_class}>${r1_score}</td>
+                    <td ${r2_class}>${r2_score}</td>
                     <td class="total-score">${total}</td>
                 `;
                 
