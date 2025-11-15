@@ -140,7 +140,7 @@ function createWeeklyScoreChart(teamsData, weeklyAverage) {
     // --- 1. Create a dataset for each team ---
     teamsData
         .filter(team => team.total > 0)
-        .forEach(team => {
+        .forEach(team, index => {
             const color = `rgba(${Math.floor(Math.random() * 200)}, ${Math.floor(Math.random() * 200)}, ${Math.floor(Math.random() * 200)}, 0.8)`;
             
             // This is the per-round data, NOT cumulative
@@ -156,7 +156,7 @@ function createWeeklyScoreChart(teamsData, weeklyAverage) {
                 backgroundColor: color,
                 fill: false,
                 tension: 0.1,
-                hidden: false // Initially visible
+                hidden: index >=3 // Initially visible
             };
             allDatasets.push(teamDataset);
 
@@ -165,7 +165,7 @@ function createWeeklyScoreChart(teamsData, weeklyAverage) {
             
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.checked = true;
+            checkbox.checked = index < 3;
             checkbox.id = team.teamName; // Link checkbox to dataset label
             
             const label = document.createElement('label');
@@ -240,3 +240,4 @@ function createWeeklyScoreChart(teamsData, weeklyAverage) {
         }
     });
 }
+
