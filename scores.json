@@ -18,7 +18,7 @@
     { "teamName": "THREE IRONS AND A WOOD", "rnd1": { "score": 57.00, "isDefault": false }, "rnd2": { "score": 59.40, "isDefault": false }, "rnd3": { "score": 59.68, "isDefault": true }, "rnd4": { "score": 57.40, "isDefault": false }, "total": 233.48 },
     { "teamName": "GIVE ME A WEDGIE", "rnd1": { "score": 55.10, "isDefault": false }, "rnd2": { "score": 58.50, "isDefault": false }, "rnd3": { "score": 61.10, "isDefault": false }, "rnd4": { "score": 59.70, "isDefault": false }, "total": 234.40 },
     { "teamName": "BULLDOG AND THE PUPPIES", "rnd1": { "score": 55.80, "isDefault": false }, "rnd2": { "score": 59.10, "isDefault": false }, "rnd3": { "score": 60.50, "isDefault": false }, "rnd4": { "score": 60.71, "isDefault": true }, "total": 236.11 },
-    { "teamName": "RAGE AFAINST THE GREEN", "rnd1": { "score": 64.80, "isDefault": false }, "rnd2": { "score": 57.40, "isDefault": false }, "rnd3": { "score": 55.50, "isDefault": false }, "rnd4": { "score": 59.50, "isDefault": false }, "total": 237.20 },
+    { "teamName": "RAGE AGAINST THE GREEN", "rnd1": { "score": 64.80, "isDefault": false }, "rnd2": { "score": 57.40, "isDefault": false }, "rnd3": { "score": 55.50, "isDefault": false }, "rnd4": { "score": 59.50, "isDefault": false }, "total": 237.20 },
     { "teamName": "THE TWIGS", "rnd1": { "score": 63.40, "isDefault": false }, "rnd2": { "score": 58.20, "isDefault": false }, "rnd3": { "score": 55.20, "isDefault": false }, "rnd4": { "score": 60.71, "isDefault": true }, "total": 237.51 },
     { "teamName": "TEAM SEAMASTER", "rnd1": { "score": 60.53, "isDefault": true }, "rnd2": { "score": 59.10, "isDefault": false }, "rnd3": { "score": 59.68, "isDefault": true }, "rnd4": { "score": 59.10, "isDefault": false }, "total": 238.41 },
     { "teamName": "BIRDIE HUNTERS", "rnd1": { "score": 54.70, "isDefault": false }, "rnd2": { "score": 62.90, "isDefault": false }, "rnd3": { "score": 59.68, "isDefault": true }, "rnd4": { "score": 61.40, "isDefault": false }, "total": 238.68 },
@@ -37,3 +37,4 @@
     { "teamName": "BALLZ DEEP IN THE ROUGH", "rnd1": { "score": 80.50, "isDefault": false }, "rnd2": { "score": 78.50, "isDefault": false }, "rnd3": { "score": 74.50, "isDefault": false }, "rnd4": { "score": 60.71, "isDefault": true }, "total": 294.21 }
   ]
 }
+
