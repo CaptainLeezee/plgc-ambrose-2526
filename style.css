@@ -1,0 +1,96 @@
+/* Basic page styling */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin: 0;
+}
+
+main {
+    width: 100%;
+    max-width: 800px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+h1 {
+    text-align: center;
+    padding: 20px 0;
+    margin: 0;
+    background-color: #fafafa;
+    border-bottom: 1px solid #eee;
+    font-size: 1.5em;
+    color: #111;
+}
+
+.table-container {
+    overflow-x: auto; /* Allows horizontal scrolling on small screens */
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Table Header */
+thead tr {
+    background-color: #f9f9f9;
+}
+
+th {
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    font-size: 0.85em;
+}
+
+/* Table Body */
+tbody tr:nth-child(even) {
+    background-color: #fdfdfd; /* Stripe effect */
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+td:first-child {
+    font-weight: 500;
+    color: #000;
+}
+
+/* Mimic the image styles */
+.total-score {
+    font-weight: 700;
+    color: #D9534F; /* Red color for totals */
+}
+
+.default-score {
+    background-color: #ececec !important; /* Gray background for default */
+    color: #333;
+}
+
+/* Table Footer (for Averages) */
+tfoot tr {
+    background-color: #fafafa;
+    font-weight: 700;
+}
+
+.note {
+    padding: 15px;
+    font-size: 0.9em;
+    color: #777;
+    background-color: #fdfdfd;
+    border-top: 1px solid #eee;
+}
