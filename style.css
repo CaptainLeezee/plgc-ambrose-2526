@@ -174,7 +174,7 @@ main#leaderboard::after {
 /* (He's facing right, so he's looking AT the scores) */
 main#leaderboard::before {
     left: 0;
-    transform: translateX(-55%); /* Hides 65% of his body */
+    transform: translateX(-50%); /* Hides 65% of his body */
 }
 
 /* Dog 2: Peeking from the right */
@@ -184,5 +184,6 @@ main#leaderboard::after {
     transform: translateX(65%); /* Hides 65% of his body */
 }
 /* --- END OF DACHSHUND --- */
+
 
 
