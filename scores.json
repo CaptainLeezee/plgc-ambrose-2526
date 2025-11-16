@@ -1,5 +1,5 @@
 {
-  "title": "2024/25 FRIDAY NIGHT AMBROSE ROUNDS 1 TO 10",
+  "title": "2025/26 FRIDAY NIGHT AMBROSE ROUNDS 1 TO 10",
   "weeklyAverage": {
     "rnd1": 60.53,
     "rnd2": 60.90,
@@ -37,4 +37,5 @@
     { "teamName": "BALLZ DEEP IN THE ROUGH", "rnd1": { "score": 80.50, "isDefault": false }, "rnd2": { "score": 78.50, "isDefault": false }, "rnd3": { "score": 74.50, "isDefault": false }, "rnd4": { "score": 60.71, "isDefault": true }, "total": 294.21 }
   ]
 }
+
 
