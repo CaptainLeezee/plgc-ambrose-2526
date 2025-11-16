@@ -155,7 +155,7 @@ main#leaderboard::before,
 main#leaderboard::after {
     content: '';
     position: absolute;
-    bottom: -15px; /* Sits just below the main white box */
+    top: -15px; /* Sits just below the main white box */
     
     /* Your image is 1343x807. We'll make it 200px wide. */
     /* (807 / 1343) * 200px = 120px */
@@ -174,7 +174,7 @@ main#leaderboard::after {
 /* (He's facing right, so he's looking AT the scores) */
 main#leaderboard::before {
     left: 0;
-    transform: translateX(-65%); /* Hides 65% of his body */
+    transform: translateX(-45%); /* Hides 65% of his body */
 }
 
 /* Dog 2: Peeking from the right */
@@ -184,3 +184,4 @@ main#leaderboard::after {
     transform: translateX(65%); /* Hides 65% of his body */
 }
 /* --- END OF DACHSHUND --- */
+
