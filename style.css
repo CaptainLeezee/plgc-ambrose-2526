@@ -10,6 +10,8 @@ body {
 }
 
 main {
+    position: relative; /* This is the new "anchor" for our dogs */
+    overflow: visible !important; /* Lets the dogs peek out */
     width: 100%;
     max-width: 800px;
     background-color: #ffffff;
@@ -145,4 +147,40 @@ tfoot tr {
     cursor: pointer;
 }
 
+/* --- FUNNY DACHSHUND EASTER EGG --- */
+/* To remove, just delete this entire block. */
 
+/* Common styles for both dogs */
+main#leaderboard::before,
+main#leaderboard::after {
+    content: '';
+    position: absolute;
+    bottom: -15px; /* Sits just below the main white box */
+    
+    /* Your image is 1343x807. We'll make it 200px wide. */
+    /* (807 / 1343) * 200px = 120px */
+    width: 200px;
+    height: 120px; 
+    
+    background-image: url('dachs.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    
+    /* Tucks it *behind* the charts just slightly */
+    z-index: -1; 
+}
+
+/* Dog 1: Peeking from the left */
+/* (He's facing right, so he's looking AT the scores) */
+main#leaderboard::before {
+    left: 0;
+    transform: translateX(-65%); /* Hides 65% of his body */
+}
+
+/* Dog 2: Peeking from the right */
+/* (He's facing right, so he's running OFF the page) */
+main#leaderboard::after {
+    right: 0;
+    transform: translateX(65%); /* Hides 65% of his body */
+}
+/* --- END OF DACHSHUND --- */
