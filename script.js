@@ -12,54 +12,113 @@ document.addEventListener('DOMContentLoaded', () => {
             titleElement.textContent = data.title;
             const roundsCount = data.weeklyAverages.length;
 
-            // --- 1. DYNAMICALLY BUILD HEADER ROW ---
-            // Clear existing headers first
-            tableHeadRow.innerHTML = '<th>Team Name</th>';
+            // --- 1. CALCULATE SCORES & TOTALS ---
+            // First, verify scores against averages to flag defaults
+            let processedTeams = data.teams.map(team => {
+                let totalScore = 0;
+                
+                const formattedScores = team.scores.map((score, index) => {
+                    totalScore += score;
+                    const isDefault = score === data.weeklyAverages[index];
+                    return { val: score, isDefault: isDefault };
+                });
+                
+                // Calculate Previous Total (Total minus the last round)
+                // If only 1 round played, prevTotal is 0
+                const lastRoundScore = team.scores[roundsCount - 1] || 0;
+                const prevTotal = roundsCount > 1 ? totalScore - lastRoundScore : 0;
+
+                return {
+                    teamName: team.teamName,
+                    scores: formattedScores,
+                    total: totalScore,
+                    prevTotal: prevTotal
+                };
+            });
+
+            // --- 2. CALCULATE POSITIONS ---
+            // A. Determine Current Rank
+            // Sort by Total (lowest is best)
+            processedTeams.sort((a, b) => a.total - b.total);
+            // Assign current rank (1st, 2nd, etc.)
+            processedTeams.forEach((team, index) => {
+                team.currentRank = index + 1;
+            });
+
+            // B. Determine Previous Rank
+            if (roundsCount > 1) {
+                // Create a temporary sorted list for previous totals
+                const prevStandings = [...processedTeams].sort((a, b) => a.prevTotal - b.prevTotal);
+                
+                // Map the previous rank back to the main team objects
+                processedTeams.forEach(team => {
+                    // Find index in the previous standings array
+                    const prevRankIndex = prevStandings.findIndex(t => t.teamName === team.teamName);
+                    team.prevRank = prevRankIndex + 1;
+                    
+                    // Calculate Change: (Prev - Current)
+                    // Ex: Was 5th, now 2nd. 5 - 2 = +3 (Moved UP 3 spots)
+                    team.posChange = team.prevRank - team.currentRank;
+                });
+            } else {
+                processedTeams.forEach(team => team.posChange = 0);
+            }
+
+
+            // --- 3. DYNAMICALLY BUILD HEADER ROW ---
+            tableHeadRow.innerHTML = '';
             
-            // Create a header for each round found in the JSON
+            // NEW: Position Change Column
+            const thPos = document.createElement('th');
+            thPos.textContent = 'Pos';
+            tableHeadRow.appendChild(thPos);
+
+            const thTeam = document.createElement('th');
+            thTeam.textContent = 'Team Name';
+            tableHeadRow.appendChild(thTeam);
+            
             for (let i = 1; i <= roundsCount; i++) {
                 const th = document.createElement('th');
                 th.textContent = `Rnd ${i}`;
                 tableHeadRow.appendChild(th);
             }
-            // Add Total header
+            
             const thTotal = document.createElement('th');
             thTotal.textContent = 'Total';
             tableHeadRow.appendChild(thTotal);
 
 
-            // --- 2. CALCULATE TOTALS & PREPARE DATA ---
-            // We verify the scores against averages to determine "default" status
-            const processedTeams = data.teams.map(team => {
-                let totalScore = 0;
-                const formattedScores = team.scores.map((score, index) => {
-                    totalScore += score;
-                    // It is a default score if it matches the weekly average exactly
-                    const isDefault = score === data.weeklyAverages[index];
-                    return { val: score, isDefault: isDefault };
-                });
-                
-                return {
-                    teamName: team.teamName,
-                    scores: formattedScores,
-                    total: totalScore
-                };
-            });
-
-            // Sort by Total Score
-            processedTeams.sort((a, b) => a.total - b.total);
-
-
-            // --- 3. BUILD TABLE BODY ---
+            // --- 4. BUILD TABLE BODY ---
             processedTeams.forEach(team => {
                 const row = document.createElement('tr');
+
+                // A. Position Change Cell
+                const posCell = document.createElement('td');
+                posCell.style.fontWeight = "bold";
+                posCell.style.fontSize = "0.9em";
                 
-                // Team Name
+                if (roundsCount === 1) {
+                    posCell.innerHTML = '<span style="color:#ccc">-</span>';
+                } else if (team.posChange > 0) {
+                    // Moved UP (Green arrow)
+                    posCell.innerHTML = `<span style="color:#2ecc71">▲ ${team.posChange}</span>`;
+                } else if (team.posChange < 0) {
+                    // Moved DOWN (Red arrow)
+                    // Math.abs turns "-2" into "2"
+                    posCell.innerHTML = `<span style="color:#e74c3c">▼ ${Math.abs(team.posChange)}</span>`;
+                } else {
+                    // No Change
+                    posCell.innerHTML = '<span style="color:#ccc">-</span>';
+                }
+                row.appendChild(posCell);
+
+
+                // B. Team Name
                 const nameCell = document.createElement('td');
                 nameCell.textContent = team.teamName;
                 row.appendChild(nameCell);
 
-                // Round Scores
+                // C. Round Scores
                 team.scores.forEach(s => {
                     const td = document.createElement('td');
                     td.textContent = s.val.toFixed(2);
@@ -69,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     row.appendChild(td);
                 });
 
-                // Total
+                // D. Total
                 const totalCell = document.createElement('td');
                 totalCell.classList.add('total-score');
                 totalCell.textContent = team.total.toFixed(2);
@@ -79,19 +138,21 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
 
-            // --- 4. BUILD TABLE FOOTER (AVERAGES) ---
+            // --- 5. BUILD TABLE FOOTER (AVERAGES) ---
             const footerRow = document.createElement('tr');
-            footerRow.innerHTML = '<td>Weekly Average</td>';
+            // Add empty cell for "Pos" column
+            footerRow.innerHTML = '<td></td><td>Weekly Average</td>';
+            
             data.weeklyAverages.forEach(avg => {
                 const td = document.createElement('td');
                 td.textContent = avg.toFixed(2);
                 footerRow.appendChild(td);
             });
-            footerRow.innerHTML += '<td></td>'; // Empty cell for Total column
+            footerRow.innerHTML += '<td></td>'; 
             tableFooter.appendChild(footerRow);
 
 
-            // --- 5. BUILD CHARTS ---
+            // --- 6. BUILD CHARTS ---
             createScoreChart(processedTeams, roundsCount); 
             createWeeklyScoreChart(processedTeams, data.weeklyAverages, roundsCount);
 
@@ -102,31 +163,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 });
 
-// --- CHART 1: CUMULATIVE ---
+// --- CHART FUNCTIONS (Keep these exactly as they were) ---
 function createScoreChart(teamsData, roundsCount) {
     const ctx = document.getElementById('scoreChart').getContext('2d');
-    
-    // Generate Labels (Rnd 1, Rnd 2...)
     const labels = ['Start'];
     for(let i=1; i<=roundsCount; i++) labels.push(`Rnd ${i}`);
 
     const datasets = teamsData.map(team => {
         let runningTotal = 0;
-        const dataPoints = [0]; // Start at 0
-        
-        team.scores.forEach(s => {
-            runningTotal += s.val;
-            dataPoints.push(runningTotal);
-        });
-
+        const dataPoints = [0];
+        team.scores.forEach(s => { runningTotal += s.val; dataPoints.push(runningTotal); });
         const color = `rgba(${Math.floor(Math.random()*200)}, ${Math.floor(Math.random()*200)}, ${Math.floor(Math.random()*200)}, 0.8)`;
         return {
-            label: team.teamName,
-            data: dataPoints,
-            borderColor: color,
-            backgroundColor: color,
-            fill: false,
-            tension: 0.1
+            label: team.teamName, data: dataPoints, borderColor: color, backgroundColor: color, fill: false, tension: 0.1
         };
     });
 
@@ -135,87 +184,43 @@ function createScoreChart(teamsData, roundsCount) {
         data: { labels: labels, datasets: datasets },
         options: {
             responsive: true,
-            plugins: {
-                legend: { display: teamsData.length <= 30, position: 'top', labels: { boxWidth: 12, font: { size: 10 } } },
-                tooltip: { mode: 'index', intersect: false }
-            },
-            scales: {
-                y: { title: { display: true, text: 'Cumulative Score' } },
-                x: { title: { display: true, text: 'Rounds' } }
-            }
+            plugins: { legend: { display: teamsData.length <= 30, position: 'top', labels: { boxWidth: 12, font: { size: 10 } } }, tooltip: { mode: 'index', intersect: false } },
+            scales: { y: { title: { display: true, text: 'Cumulative Score' } }, x: { title: { display: true, text: 'Rounds' } } }
         }
     });
 }
 
-// --- CHART 2: WEEKLY ---
 function createWeeklyScoreChart(teamsData, weeklyAverages, roundsCount) {
     const ctx = document.getElementById('weeklyScoreChart').getContext('2d');
     const toggleContainer = document.getElementById('team-toggle-container');
     toggleContainer.innerHTML = '';
-
     const labels = [];
     for(let i=1; i<=roundsCount; i++) labels.push(`Rnd ${i}`);
-
     const allDatasets = [];
 
-    // Teams
     teamsData.forEach((team, index) => {
         const color = `rgba(${Math.floor(Math.random()*200)}, ${Math.floor(Math.random()*200)}, ${Math.floor(Math.random()*200)}, 0.8)`;
-        
         const teamDataset = {
-            label: team.teamName,
-            data: team.scores.map(s => s.val),
-            borderColor: color,
-            backgroundColor: color,
-            fill: false,
-            tension: 0.1,
-            hidden: index >= 3 // Only show Top 3 by default
+            label: team.teamName, data: team.scores.map(s => s.val), borderColor: color, backgroundColor: color, fill: false, tension: 0.1, hidden: index >= 3
         };
         allDatasets.push(teamDataset);
 
-        // Create Checkbox
         const toggleDiv = document.createElement('div');
         const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.id = team.teamName;
-        checkbox.checked = index < 3; // Check Top 3 by default
-        
+        checkbox.type = 'checkbox'; checkbox.id = team.teamName; checkbox.checked = index < 3;
         const label = document.createElement('label');
-        label.htmlFor = team.teamName;
-        label.textContent = team.teamName;
-        
-        toggleDiv.appendChild(checkbox);
-        toggleDiv.appendChild(label);
-        toggleContainer.appendChild(toggleDiv);
-
+        label.htmlFor = team.teamName; label.textContent = team.teamName;
+        toggleDiv.appendChild(checkbox); toggleDiv.appendChild(label); toggleContainer.appendChild(toggleDiv);
         checkbox.addEventListener('change', () => {
             const dataset = myWeeklyChart.data.datasets.find(d => d.label === team.teamName);
-            if (dataset) {
-                dataset.hidden = !checkbox.checked;
-                myWeeklyChart.update();
-            }
+            if (dataset) { dataset.hidden = !checkbox.checked; myWeeklyChart.update(); }
         });
     });
 
-    // Average Line
-    allDatasets.push({
-        label: 'Weekly Average',
-        data: weeklyAverages,
-        borderColor: '#e63946',
-        backgroundColor: '#e63946',
-        borderDash: [5, 5],
-        tension: 0.1
-    });
+    allDatasets.push({ label: 'Weekly Average', data: weeklyAverages, borderColor: '#e63946', backgroundColor: '#e63946', borderDash: [5, 5], tension: 0.1 });
 
     myWeeklyChart = new Chart(ctx, {
-        type: 'line',
-        data: { labels: labels, datasets: allDatasets },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
-            scales: {
-                y: { title: { display: true, text: 'Score per Round' } }
-            }
-        }
+        type: 'line', data: { labels: labels, datasets: allDatasets },
+        options: { responsive: true, plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } }, scales: { y: { title: { display: true, text: 'Score per Round' } } } }
     });
 }
