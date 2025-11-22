@@ -224,3 +224,77 @@ function createWeeklyScoreChart(teamsData, weeklyAverages, roundsCount) {
         options: { responsive: true, plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } }, scales: { y: { title: { display: true, text: 'Score per Round' } } } }
     });
 }
+
+// --- CALCULATOR LOGIC ---
+// This runs immediately to set up the event listeners
+(function setupCalculator() {
+    const hcpInputs = document.querySelectorAll('.hcp-input');
+    const grossInput = document.getElementById('gross-input');
+    
+    const resultBox = document.getElementById('calc-results');
+    const errorBox = document.getElementById('calc-error');
+    
+    const elSum = document.getElementById('calc-sum');
+    const elDivisor = document.getElementById('calc-divisor');
+    const elTeamHcp = document.getElementById('calc-team-hcp');
+    const elFinalResult = document.getElementById('result-value');
+
+    // The rules for the divisor based on player count
+    const divisors = {
+        2: 4,
+        3: 6,
+        4: 8,
+        5: 10
+    };
+
+    function calculate() {
+        let playerCount = 0;
+        let sumHcp = 0;
+
+        // 1. Process Handicaps
+        hcpInputs.forEach(input => {
+            // Check if value is strictly not an empty string
+            if (input.value !== '') {
+                playerCount++;
+                sumHcp += parseFloat(input.value);
+            }
+        });
+
+        // 2. Get Gross Score
+        const grossScore = parseFloat(grossInput.value);
+
+        // 3. Validate
+        // We need at least 2 players and a valid gross score to show a result
+        if (playerCount < 2 || isNaN(grossScore)) {
+            resultBox.style.display = 'none';
+            if (playerCount > 0 && playerCount < 2) {
+                errorBox.style.display = 'block'; // Show hint if they only typed 1 player
+            } else {
+                errorBox.style.display = 'none';
+            }
+            return;
+        }
+
+        errorBox.style.display = 'none';
+        resultBox.style.display = 'block';
+
+        // 4. Calculate Team Handicap
+        // If more than 5 players, default to 10 (or handle error), but UI limits to 5.
+        const divisor = divisors[playerCount] || 10; 
+        const teamHcp = sumHcp / divisor;
+
+        // 5. Calculate Final Net Score
+        // Formula: (Gross * 2) - Team Hcp
+        const netScore = (grossScore * 2) - teamHcp;
+
+        // 6. Update UI
+        elSum.textContent = `Sum: ${sumHcp.toFixed(1)}`;
+        elDivisor.textContent = `Div: ${divisor}`;
+        elTeamHcp.textContent = `Hcp: ${teamHcp.toFixed(2)}`;
+        elFinalResult.textContent = netScore.toFixed(2);
+    }
+
+    // Add event listeners to all inputs to trigger calculation on change
+    hcpInputs.forEach(input => input.addEventListener('input', calculate));
+    grossInput.addEventListener('input', calculate);
+})();
