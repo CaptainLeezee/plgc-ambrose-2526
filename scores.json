@@ -4,7 +4,7 @@
   "teams": [
     { "teamName": "LOST IN THE ROUGH", "scores": [49.10, 52.10, 56.80, 60.70, 63.40] },
     { "teamName": "BAGA", "scores": [60.53, 52.40, 52.70, 54.70, 50.60] },
-    { "teamName": "GOOD SHOT", "scores": [66.80, 51.60, 55.60, 55.60, 52.60] },
+    { "teamName": "GOOD SHOT", "scores": [66.80, 51.60, 55.60, 55.60, 66.5] },
     { "teamName": "FAR FROM PAR", "scores": [52.50, 52.50, 68.50, 56.50, 46.50] },
     { "teamName": "FAIRWAY TO HEAVEN", "scores": [55.70, 60.00, 53.50, 61.30, 56] },
     { "teamName": "BIRDIE SAVIE", "scores": [56.70, 60.90, 58.00, 55.50, 55.5] },
@@ -32,3 +32,4 @@
     { "teamName": "BALLZ DEEP IN THE ROUGH", "scores": [80.50, 78.50, 74.50, 60.71, 60.66] }
   ]
 }
+
