@@ -186,4 +186,8 @@ main#leaderboard::after {
 /* --- END OF DACHSHUND --- */
 
 
-
+/* Reduce width of the Position column */
+th:first-child, td:first-child {
+    width: 60px;
+    text-align: center;
+}
