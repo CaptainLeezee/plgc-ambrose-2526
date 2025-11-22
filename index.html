@@ -42,9 +42,46 @@
             
             <canvas id="weeklyScoreChart"></canvas>
         </div>
-        
+        <div class="calc-container">
+            <h2>Net Score Calculator</h2>
+            
+            <div class="input-group">
+                <label>Player Handicaps (Enter 0 for scratch)</label>
+                <div class="hcp-row">
+                    <input type="number" class="hcp-input" placeholder="P1" step="0.1">
+                    <input type="number" class="hcp-input" placeholder="P2" step="0.1">
+                    <input type="number" class="hcp-input" placeholder="P3" step="0.1">
+                    <input type="number" class="hcp-input" placeholder="P4" step="0.1">
+                    <input type="number" class="hcp-input" placeholder="P5" step="0.1">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Gross Score (9 Holes)</label>
+                <input type="number" id="gross-input" placeholder="e.g. 36" step="1">
+            </div>
+
+            <div class="calc-results" id="calc-results" style="display: none;">
+                <div class="calc-details">
+                    <span id="calc-sum">Sum: 0</span> / 
+                    <span id="calc-divisor">Div: ?</span> = 
+                    <span id="calc-team-hcp">Hcp: 0</span>
+                </div>
+                <div class="final-net-score">
+                    Net Score: <span id="result-value">--</span>
+                </div>
+                <div class="calc-formula-text">
+                    (Gross × 2) - Team Hcp
+                </div>
+            </div>
+            
+            <div id="calc-error" style="color: #e74c3c; font-size: 0.9em; text-align: center; display: none;">
+                Enter at least 2 players
+            </div>
+        </div>   
     </main>
 </body>
 </html>
+
 
 
