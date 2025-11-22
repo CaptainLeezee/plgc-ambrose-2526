@@ -188,6 +188,7 @@ main#leaderboard::after {
 
 /* Reduce width of the Position column */
 th:first-child, td:first-child {
-    width: 60px;
+    width: 50px;
     text-align: center;
 }
+
