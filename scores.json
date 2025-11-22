@@ -8,7 +8,7 @@
     { "teamName": "FAR FROM PAR", "scores": [52.50, 52.50, 68.50, 56.50, 46.50] },
     { "teamName": "FAIRWAY TO HEAVEN", "scores": [55.70, 60.00, 53.50, 61.30, 56] },
     { "teamName": "BIRDIE SAVIE", "scores": [56.70, 60.90, 58.00, 55.50, 55.5] },
-    { "teamName": "LORD OF THE SWING", "scores": [58.10, 58.30, 54.90, 60.71, 56.00] },
+    { "teamName": "LORD OF THE SWING", "scores": [58.10, 58.30, 54.90, 60.71, 66.5] },
     { "teamName": "AVERAGE JOES", "scores": [60.30, 60.60, 54.20, 57.20, 59.0] },
     { "teamName": "THREE IRONS AND A WOOD", "scores": [57.00, 59.40, 59.68, 57.40, 60.66] },
     { "teamName": "GIVE ME A WEDGIE", "scores": [55.10, 58.50, 61.10, 59.70, 58.7] },
@@ -30,6 +30,9 @@
     { "teamName": "DODGEY GOLFERS", "scores": [64.50, 60.50, 59.68, 70.50, 66.5] },
     { "teamName": "FUDDY DUDDIES", "scores": [63.70, 71.00, 59.68, 63.70, 60.66] },
     { "teamName": "BALLZ DEEP IN THE ROUGH", "scores": [80.50, 78.50, 74.50, 60.71, 60.66] }
+    { "teamName": "HACK SABBATH", "scores": [60.53, 60.9, 59.68, 60.71, 67.9] }
+    { "teamName": "HACK", "scores": [60.53, 60.9, 59.68, 60.71, 60.66] }
   ]
 }
+
 
