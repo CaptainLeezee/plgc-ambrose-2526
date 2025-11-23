@@ -225,10 +225,10 @@ function createWeeklyScoreChart(teamsData, weeklyAverages, roundsCount) {
     });
 }
 
-// --- CALCULATOR LOGIC ---
-// This runs immediately to set up the event listeners
+// --- CALCULATOR LOGIC (With LocalStorage) ---
 (function setupCalculator() {
     const hcpInputs = document.querySelectorAll('.hcp-input');
+    const initInputs = document.querySelectorAll('.init-input'); // Select initial boxes too
     const grossInput = document.getElementById('gross-input');
     
     const resultBox = document.getElementById('calc-results');
@@ -239,36 +239,50 @@ function createWeeklyScoreChart(teamsData, weeklyAverages, roundsCount) {
     const elTeamHcp = document.getElementById('calc-team-hcp');
     const elFinalResult = document.getElementById('result-value');
 
-    // The rules for the divisor based on player count
-    const divisors = {
-        2: 4,
-        3: 6,
-        4: 8,
-        5: 10
-    };
+    const divisors = { 2: 4, 3: 6, 4: 8, 5: 10 };
 
+    // --- 1. LOAD SAVED DATA ---
+    function loadSavedData() {
+        // Load Handicaps
+        hcpInputs.forEach(input => {
+            const saved = localStorage.getItem(input.id);
+            if (saved !== null) input.value = saved;
+        });
+        // Load Initials
+        initInputs.forEach(input => {
+            const saved = localStorage.getItem(input.id);
+            if (saved !== null) input.value = saved;
+        });
+        
+        // Attempt calculation immediately in case data exists
+        calculate();
+    }
+
+    // --- 2. SAVE DATA ---
+    function saveData(event) {
+        const input = event.target;
+        // Save the value using the Input ID as the key
+        localStorage.setItem(input.id, input.value);
+    }
+
+    // --- 3. CALCULATE ---
     function calculate() {
         let playerCount = 0;
         let sumHcp = 0;
 
-        // 1. Process Handicaps
         hcpInputs.forEach(input => {
-            // Check if value is strictly not an empty string
             if (input.value !== '') {
                 playerCount++;
                 sumHcp += parseFloat(input.value);
             }
         });
 
-        // 2. Get Gross Score
         const grossScore = parseFloat(grossInput.value);
 
-        // 3. Validate
-        // We need at least 2 players and a valid gross score to show a result
         if (playerCount < 2 || isNaN(grossScore)) {
             resultBox.style.display = 'none';
             if (playerCount > 0 && playerCount < 2) {
-                errorBox.style.display = 'block'; // Show hint if they only typed 1 player
+                errorBox.style.display = 'block';
             } else {
                 errorBox.style.display = 'none';
             }
@@ -278,23 +292,32 @@ function createWeeklyScoreChart(teamsData, weeklyAverages, roundsCount) {
         errorBox.style.display = 'none';
         resultBox.style.display = 'block';
 
-        // 4. Calculate Team Handicap
-        // If more than 5 players, default to 10 (or handle error), but UI limits to 5.
         const divisor = divisors[playerCount] || 10; 
         const teamHcp = sumHcp / divisor;
-
-        // 5. Calculate Final Net Score
-        // Formula: (Gross * 2) - Team Hcp
         const netScore = (grossScore * 2) - teamHcp;
 
-        // 6. Update UI
         elSum.textContent = `Sum: ${sumHcp.toFixed(1)}`;
         elDivisor.textContent = `Div: ${divisor}`;
         elTeamHcp.textContent = `Hcp: ${teamHcp.toFixed(2)}`;
         elFinalResult.textContent = netScore.toFixed(2);
     }
 
-    // Add event listeners to all inputs to trigger calculation on change
-    hcpInputs.forEach(input => input.addEventListener('input', calculate));
+    // --- 4. ATTACH EVENTS ---
+    // Handicaps: Save + Calculate
+    hcpInputs.forEach(input => {
+        input.addEventListener('input', (e) => { saveData(e); calculate(); });
+    });
+
+    // Initials: Save only (doesn't affect math)
+    initInputs.forEach(input => {
+        input.addEventListener('input', saveData);
+    });
+
+    // Gross Score: Calculate only (We don't save this, assuming it changes weekly)
     grossInput.addEventListener('input', calculate);
+
+    // Run load on start
+    loadSavedData();
+
 })();
+
