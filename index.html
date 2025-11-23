@@ -46,13 +46,28 @@
             <h2>Net Score Calculator</h2>
             
             <div class="input-group">
-                <label>Player Handicaps</label>
+                <label>Player Initials & Handicaps</label>
                 <div class="hcp-row">
-                    <input type="number" class="hcp-input" placeholder="P1" step="0.1">
-                    <input type="number" class="hcp-input" placeholder="P2" step="0.1">
-                    <input type="number" class="hcp-input" placeholder="P3" step="0.1">
-                    <input type="number" class="hcp-input" placeholder="P4" step="0.1">
-                    <input type="number" class="hcp-input" placeholder="P5" step="0.1">
+                    <div class="player-col">
+                        <input type="text" id="p1-name" class="init-input" placeholder="NM" maxlength="3">
+                        <input type="number" id="p1-hcp" class="hcp-input" placeholder="0.0" step="0.1">
+                    </div>
+                    <div class="player-col">
+                        <input type="text" id="p2-name" class="init-input" placeholder="NM" maxlength="3">
+                        <input type="number" id="p2-hcp" class="hcp-input" placeholder="0.0" step="0.1">
+                    </div>
+                    <div class="player-col">
+                        <input type="text" id="p3-name" class="init-input" placeholder="NM" maxlength="3">
+                        <input type="number" id="p3-hcp" class="hcp-input" placeholder="0.0" step="0.1">
+                    </div>
+                    <div class="player-col">
+                        <input type="text" id="p4-name" class="init-input" placeholder="NM" maxlength="3">
+                        <input type="number" id="p4-hcp" class="hcp-input" placeholder="0.0" step="0.1">
+                    </div>
+                    <div class="player-col">
+                        <input type="text" id="p5-name" class="init-input" placeholder="NM" maxlength="3">
+                        <input type="number" id="p5-hcp" class="hcp-input" placeholder="0.0" step="0.1">
+                    </div>
                 </div>
             </div>
 
@@ -82,6 +97,7 @@
     </main>
 </body>
 </html>
+
 
 
 
