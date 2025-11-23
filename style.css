@@ -196,7 +196,7 @@ th:first-child, td:first-child {
 
 .calc-container {
     margin-top: 30px;
-    padding: 20px;
+    padding: 20px 10px; /* Less side padding for mobile space */
     background-color: #f8f9fa;
     border-top: 2px solid #eee;
 }
@@ -205,6 +205,7 @@ th:first-child, td:first-child {
     margin-top: 0;
     margin-bottom: 15px;
     text-align: center;
+    font-size: 1.2em;
 }
 
 .input-group {
@@ -213,35 +214,62 @@ th:first-child, td:first-child {
 
 .input-group label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-weight: 600;
     font-size: 0.9em;
     color: #555;
+    text-align: center;
 }
 
-/* The row of 5 small inputs */
+/* The row container */
 .hcp-row {
     display: flex;
-    gap: 8px;
+    gap: 5px; /* Tight gap to fit 5 columns */
     justify-content: space-between;
 }
 
-.hcp-input {
-    width: 100%; /* Takes equal space */
-    padding: 8px 5px;
+/* Each player column (Initials on top, Number on bottom) */
+.player-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1; /* Distribute space evenly */
+    min-width: 0; /* Prevents flex items from overflowing on tiny screens */
+}
+
+/* Common input styles */
+.player-col input {
+    width: 100%;
     text-align: center;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 16px; /* 16px prevents zooming on iPhone */
+    padding: 5px 0;
+    box-sizing: border-box; 
+}
+
+/* Initials specific style */
+.init-input {
+    font-size: 0.75em;
+    text-transform: uppercase;
+    background-color: #fff;
+    color: #777;
+}
+
+/* Handicap number specific style */
+.hcp-input {
+    font-size: 1em;
+    padding: 8px 0;
+    font-weight: bold;
 }
 
 #gross-input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     font-size: 1.1em;
     border: 1px solid #ccc;
     border-radius: 4px;
-    box-sizing: border-box; /* Ensures padding doesn't widen element */
+    box-sizing: border-box;
+    text-align: center;
 }
 
 /* Results Box */
@@ -271,4 +299,5 @@ th:first-child, td:first-child {
     color: #aaa;
     margin-top: 5px;
 }
+
 
