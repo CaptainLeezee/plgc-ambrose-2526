@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
             // --- 6. BUILD CHARTS ---
-            // createScoreChart(processedTeams, roundsCount); 
+            createScoreChart(processedTeams, roundsCount); 
             createWeeklyScoreChart(processedTeams, data.weeklyAverages, roundsCount);
 
         })
@@ -320,5 +320,6 @@ function createWeeklyScoreChart(teamsData, weeklyAverages, roundsCount) {
     loadSavedData();
 
 })();
+
 
 
