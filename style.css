@@ -340,9 +340,9 @@ tfoot .sticky-col {
 /* Column 1: Position */
 .col-pos {
     left: 0;
-    width: 50px;
-    min-width: 50px;
-    max-width: 50px;
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
     border-right: 1px solid #eee;
 }
 
@@ -371,4 +371,5 @@ td.col-total {
     font-weight: bold;
     color: #2c3e50;
 }
+
 
