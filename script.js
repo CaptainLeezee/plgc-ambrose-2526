@@ -62,11 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
             thName.textContent = 'Team Name';
             thName.className = 'sticky-col col-name';
             tableHeadRow.appendChild(thName);
-
-            // 3. Total
+// 3. Total
             const thTotal = document.createElement('th');
             thTotal.textContent = 'Total';
-            thTotal.className = 'sticky-col col-total';
+            thTotal.className = 'col-total'; // removed 'sticky-col' here, CSS handles it
             tableHeadRow.appendChild(thTotal);
 
             // 4. Rounds (Scrollable)
@@ -103,11 +102,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 nameCell.textContent = team.teamName;
                 row.appendChild(nameCell);
 
-                // 3. Total Cell
-                const totalCell = document.createElement('td');
-                totalCell.className = 'sticky-col col-total'; // Add sticky class
-                totalCell.textContent = team.total.toFixed(2);
-                row.appendChild(totalCell);
+// 3. Total Cell
+            const totalCell = document.createElement('td');
+            totalCell.className = 'col-total'; // removed 'sticky-col'
+            totalCell.textContent = team.total.toFixed(2);
+            row.appendChild(totalCell);
 
                 // 4. Round Scores
                 team.scores.forEach(s => {
@@ -137,9 +136,9 @@ document.addEventListener('DOMContentLoaded', () => {
             tdName.className = 'sticky-col col-name';
             footerRow.appendChild(tdName);
 
-            // Total (Empty)
+// Total (Empty)
             const tdTotal = document.createElement('td');
-            tdTotal.className = 'sticky-col col-total';
+            tdTotal.className = 'col-total'; // removed 'sticky-col'
             footerRow.appendChild(tdTotal);
 
             // Rounds Averages
@@ -246,3 +245,4 @@ function createWeeklyScoreChart(teamsData, weeklyAverages, roundsCount) {
         options: { responsive: true, plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } }, scales: { y: { title: { display: true, text: 'Score per Round' } } } }
     });
 }
+
