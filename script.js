@@ -12,19 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
             titleElement.textContent = data.title;
             const roundsCount = data.weeklyAverages.length;
 
-            // --- 1. CALCULATE SCORES & TOTALS ---
-            // First, verify scores against averages to flag defaults
+            // --- 1. CALCULATE SCORES ---
             let processedTeams = data.teams.map(team => {
                 let totalScore = 0;
-                
                 const formattedScores = team.scores.map((score, index) => {
                     totalScore += score;
                     const isDefault = score === data.weeklyAverages[index];
                     return { val: score, isDefault: isDefault };
                 });
                 
-                // Calculate Previous Total (Total minus the last round)
-                // If only 1 round played, prevTotal is 0
                 const lastRoundScore = team.scores[roundsCount - 1] || 0;
                 const prevTotal = roundsCount > 1 ? totalScore - lastRoundScore : 0;
 
@@ -36,28 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             });
 
-            // --- 2. CALCULATE POSITIONS ---
-            // A. Determine Current Rank
-            // Sort by Total (lowest is best)
+            // --- 2. RANKING LOGIC ---
             processedTeams.sort((a, b) => a.total - b.total);
-            // Assign current rank (1st, 2nd, etc.)
-            processedTeams.forEach((team, index) => {
-                team.currentRank = index + 1;
-            });
+            processedTeams.forEach((team, index) => { team.currentRank = index + 1; });
 
-            // B. Determine Previous Rank
             if (roundsCount > 1) {
-                // Create a temporary sorted list for previous totals
                 const prevStandings = [...processedTeams].sort((a, b) => a.prevTotal - b.prevTotal);
-                
-                // Map the previous rank back to the main team objects
                 processedTeams.forEach(team => {
-                    // Find index in the previous standings array
                     const prevRankIndex = prevStandings.findIndex(t => t.teamName === team.teamName);
                     team.prevRank = prevRankIndex + 1;
-                    
-                    // Calculate Change: (Prev - Current)
-                    // Ex: Was 5th, now 2nd. 5 - 2 = +3 (Moved UP 3 spots)
                     team.posChange = team.prevRank - team.currentRank;
                 });
             } else {
@@ -65,60 +48,68 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
 
-            // --- 3. DYNAMICALLY BUILD HEADER ROW ---
+            // --- 3. BUILD HEADERS (New Order: Pos, Name, Total, Rounds) ---
             tableHeadRow.innerHTML = '';
             
-            // NEW: Position Change Column
+            // 1. Pos
             const thPos = document.createElement('th');
             thPos.textContent = 'Pos';
+            thPos.className = 'sticky-col col-pos';
             tableHeadRow.appendChild(thPos);
 
-            const thTeam = document.createElement('th');
-            thTeam.textContent = 'Team Name';
-            tableHeadRow.appendChild(thTeam);
-            
+            // 2. Name
+            const thName = document.createElement('th');
+            thName.textContent = 'Team Name';
+            thName.className = 'sticky-col col-name';
+            tableHeadRow.appendChild(thName);
+
+            // 3. Total
+            const thTotal = document.createElement('th');
+            thTotal.textContent = 'Total';
+            thTotal.className = 'sticky-col col-total';
+            tableHeadRow.appendChild(thTotal);
+
+            // 4. Rounds (Scrollable)
             for (let i = 1; i <= roundsCount; i++) {
                 const th = document.createElement('th');
                 th.textContent = `Rnd ${i}`;
                 tableHeadRow.appendChild(th);
             }
             
-            const thTotal = document.createElement('th');
-            thTotal.textContent = 'Total';
-            tableHeadRow.appendChild(thTotal);
 
-
-            // --- 4. BUILD TABLE BODY ---
+            // --- 4. BUILD BODY ---
             processedTeams.forEach(team => {
                 const row = document.createElement('tr');
 
-                // A. Position Change Cell
+                // 1. Pos Cell
                 const posCell = document.createElement('td');
-                posCell.style.fontWeight = "bold";
-                posCell.style.fontSize = "0.9em";
+                posCell.className = 'sticky-col col-pos';
+                posCell.style.textAlign = 'center';
                 
                 if (roundsCount === 1) {
                     posCell.innerHTML = '<span style="color:#ccc">-</span>';
                 } else if (team.posChange > 0) {
-                    // Moved UP (Green arrow)
-                    posCell.innerHTML = `<span style="color:#2ecc71">▲ ${team.posChange}</span>`;
+                    posCell.innerHTML = `<span style="color:#2ecc71; font-weight:bold;">▲ ${team.posChange}</span>`;
                 } else if (team.posChange < 0) {
-                    // Moved DOWN (Red arrow)
-                    // Math.abs turns "-2" into "2"
-                    posCell.innerHTML = `<span style="color:#e74c3c">▼ ${Math.abs(team.posChange)}</span>`;
+                    posCell.innerHTML = `<span style="color:#e74c3c; font-weight:bold;">▼ ${Math.abs(team.posChange)}</span>`;
                 } else {
-                    // No Change
                     posCell.innerHTML = '<span style="color:#ccc">-</span>';
                 }
                 row.appendChild(posCell);
 
-
-                // B. Team Name
+                // 2. Name Cell
                 const nameCell = document.createElement('td');
+                nameCell.className = 'sticky-col col-name';
                 nameCell.textContent = team.teamName;
                 row.appendChild(nameCell);
 
-                // C. Round Scores
+                // 3. Total Cell
+                const totalCell = document.createElement('td');
+                totalCell.className = 'sticky-col col-total'; // Add sticky class
+                totalCell.textContent = team.total.toFixed(2);
+                row.appendChild(totalCell);
+
+                // 4. Round Scores
                 team.scores.forEach(s => {
                     const td = document.createElement('td');
                     td.textContent = s.val.toFixed(2);
@@ -128,32 +119,41 @@ document.addEventListener('DOMContentLoaded', () => {
                     row.appendChild(td);
                 });
 
-                // D. Total
-                const totalCell = document.createElement('td');
-                totalCell.classList.add('total-score');
-                totalCell.textContent = team.total.toFixed(2);
-                row.appendChild(totalCell);
-
                 tableBody.appendChild(row);
             });
 
 
-            // --- 5. BUILD TABLE FOOTER (AVERAGES) ---
+            // --- 5. BUILD FOOTER ---
             const footerRow = document.createElement('tr');
-            // Add empty cell for "Pos" column
-            footerRow.innerHTML = '<td></td><td>Weekly Average</td>';
             
+            // Pos (Empty)
+            const tdPos = document.createElement('td');
+            tdPos.className = 'sticky-col col-pos';
+            footerRow.appendChild(tdPos);
+
+            // Name (Label)
+            const tdName = document.createElement('td');
+            tdName.textContent = 'Weekly Average';
+            tdName.className = 'sticky-col col-name';
+            footerRow.appendChild(tdName);
+
+            // Total (Empty)
+            const tdTotal = document.createElement('td');
+            tdTotal.className = 'sticky-col col-total';
+            footerRow.appendChild(tdTotal);
+
+            // Rounds Averages
             data.weeklyAverages.forEach(avg => {
                 const td = document.createElement('td');
                 td.textContent = avg.toFixed(2);
                 footerRow.appendChild(td);
             });
-            footerRow.innerHTML += '<td></td>'; 
+            
             tableFooter.appendChild(footerRow);
 
 
-            // --- 6. BUILD CHARTS ---
-            // createScoreChart(processedTeams, roundsCount); 
+            // --- 6. CHARTS ---
+            // createScoreChart(processedTeams, roundsCount); // Currently disabled
             createWeeklyScoreChart(processedTeams, data.weeklyAverages, roundsCount);
 
         })
@@ -163,32 +163,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 });
 
-// --- CHART FUNCTIONS (Keep these exactly as they were) ---
-function createScoreChart(teamsData, roundsCount) {
-    const ctx = document.getElementById('scoreChart').getContext('2d');
-    const labels = ['Start'];
-    for(let i=1; i<=roundsCount; i++) labels.push(`Rnd ${i}`);
+// --- CALCULATOR LOGIC (No changes needed here, copy previous version) ---
+(function setupCalculator() {
+    const hcpInputs = document.querySelectorAll('.hcp-input');
+    const initInputs = document.querySelectorAll('.init-input');
+    const grossInput = document.getElementById('gross-input');
+    const resultBox = document.getElementById('calc-results');
+    const errorBox = document.getElementById('calc-error');
+    const elSum = document.getElementById('calc-sum');
+    const elDivisor = document.getElementById('calc-divisor');
+    const elTeamHcp = document.getElementById('calc-team-hcp');
+    const elFinalResult = document.getElementById('result-value');
+    const divisors = { 2: 4, 3: 6, 4: 8, 5: 10 };
 
-    const datasets = teamsData.map(team => {
-        let runningTotal = 0;
-        const dataPoints = [0];
-        team.scores.forEach(s => { runningTotal += s.val; dataPoints.push(runningTotal); });
-        const color = `rgba(${Math.floor(Math.random()*200)}, ${Math.floor(Math.random()*200)}, ${Math.floor(Math.random()*200)}, 0.8)`;
-        return {
-            label: team.teamName, data: dataPoints, borderColor: color, backgroundColor: color, fill: false, tension: 0.1
-        };
-    });
+    function loadSavedData() {
+        hcpInputs.forEach(input => { const saved = localStorage.getItem(input.id); if (saved !== null) input.value = saved; });
+        initInputs.forEach(input => { const saved = localStorage.getItem(input.id); if (saved !== null) input.value = saved; });
+        calculate();
+    }
+    function saveData(event) { localStorage.setItem(event.target.id, event.target.value); }
 
-    new Chart(ctx, {
-        type: 'line',
-        data: { labels: labels, datasets: datasets },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: teamsData.length <= 30, position: 'top', labels: { boxWidth: 12, font: { size: 10 } } }, tooltip: { mode: 'index', intersect: false } },
-            scales: { y: { title: { display: true, text: 'Cumulative Score' } }, x: { title: { display: true, text: 'Rounds' } } }
+    function calculate() {
+        let playerCount = 0; let sumHcp = 0;
+        hcpInputs.forEach(input => { if (input.value !== '') { playerCount++; sumHcp += parseFloat(input.value); } });
+        const grossScore = parseFloat(grossInput.value);
+
+        if (playerCount < 2 || isNaN(grossScore)) {
+            resultBox.style.display = 'none';
+            if (playerCount > 0 && playerCount < 2) errorBox.style.display = 'block'; else errorBox.style.display = 'none';
+            return;
         }
-    });
-}
+        errorBox.style.display = 'none'; resultBox.style.display = 'block';
+
+        const divisor = divisors[playerCount] || 10;
+        const teamHcp = sumHcp / divisor;
+        const netScore = (grossScore * 2) - teamHcp;
+
+        elSum.textContent = `Sum: ${sumHcp.toFixed(1)}`;
+        elDivisor.textContent = `Div: ${divisor}`;
+        elTeamHcp.textContent = `Hcp: ${teamHcp.toFixed(2)}`;
+        elFinalResult.textContent = netScore.toFixed(2);
+    }
+    
+    hcpInputs.forEach(input => { input.addEventListener('input', (e) => { saveData(e); calculate(); }); });
+    initInputs.forEach(input => { input.addEventListener('input', saveData); });
+    grossInput.addEventListener('input', calculate);
+    loadSavedData();
+})();
+
 
 function createWeeklyScoreChart(teamsData, weeklyAverages, roundsCount) {
     const ctx = document.getElementById('weeklyScoreChart').getContext('2d');
@@ -224,103 +246,3 @@ function createWeeklyScoreChart(teamsData, weeklyAverages, roundsCount) {
         options: { responsive: true, plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } }, scales: { y: { title: { display: true, text: 'Score per Round' } } } }
     });
 }
-
-// --- CALCULATOR LOGIC (With LocalStorage) ---
-(function setupCalculator() {
-    const hcpInputs = document.querySelectorAll('.hcp-input');
-    const initInputs = document.querySelectorAll('.init-input'); // Select initial boxes too
-    const grossInput = document.getElementById('gross-input');
-    
-    const resultBox = document.getElementById('calc-results');
-    const errorBox = document.getElementById('calc-error');
-    
-    const elSum = document.getElementById('calc-sum');
-    const elDivisor = document.getElementById('calc-divisor');
-    const elTeamHcp = document.getElementById('calc-team-hcp');
-    const elFinalResult = document.getElementById('result-value');
-
-    const divisors = { 2: 4, 3: 6, 4: 8, 5: 10 };
-
-    // --- 1. LOAD SAVED DATA ---
-    function loadSavedData() {
-        // Load Handicaps
-        hcpInputs.forEach(input => {
-            const saved = localStorage.getItem(input.id);
-            if (saved !== null) input.value = saved;
-        });
-        // Load Initials
-        initInputs.forEach(input => {
-            const saved = localStorage.getItem(input.id);
-            if (saved !== null) input.value = saved;
-        });
-        
-        // Attempt calculation immediately in case data exists
-        calculate();
-    }
-
-    // --- 2. SAVE DATA ---
-    function saveData(event) {
-        const input = event.target;
-        // Save the value using the Input ID as the key
-        localStorage.setItem(input.id, input.value);
-    }
-
-    // --- 3. CALCULATE ---
-    function calculate() {
-        let playerCount = 0;
-        let sumHcp = 0;
-
-        hcpInputs.forEach(input => {
-            if (input.value !== '') {
-                playerCount++;
-                sumHcp += parseFloat(input.value);
-            }
-        });
-
-        const grossScore = parseFloat(grossInput.value);
-
-        if (playerCount < 2 || isNaN(grossScore)) {
-            resultBox.style.display = 'none';
-            if (playerCount > 0 && playerCount < 2) {
-                errorBox.style.display = 'block';
-            } else {
-                errorBox.style.display = 'none';
-            }
-            return;
-        }
-
-        errorBox.style.display = 'none';
-        resultBox.style.display = 'block';
-
-        const divisor = divisors[playerCount] || 10; 
-        const teamHcp = sumHcp / divisor;
-        const netScore = (grossScore * 2) - teamHcp;
-
-        elSum.textContent = `Sum: ${sumHcp.toFixed(1)}`;
-        elDivisor.textContent = `Div: ${divisor}`;
-        elTeamHcp.textContent = `Hcp: ${teamHcp.toFixed(2)}`;
-        elFinalResult.textContent = netScore.toFixed(2);
-    }
-
-    // --- 4. ATTACH EVENTS ---
-    // Handicaps: Save + Calculate
-    hcpInputs.forEach(input => {
-        input.addEventListener('input', (e) => { saveData(e); calculate(); });
-    });
-
-    // Initials: Save only (doesn't affect math)
-    initInputs.forEach(input => {
-        input.addEventListener('input', saveData);
-    });
-
-    // Gross Score: Calculate only (We don't save this, assuming it changes weekly)
-    grossInput.addEventListener('input', calculate);
-
-    // Run load on start
-    loadSavedData();
-
-})();
-
-
-
-
